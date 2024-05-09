@@ -45,7 +45,13 @@ class SplitPredictor(BasePredictor):
         logits = logits.to(self._device)
         labels = labels.to(self._device)
         scores = self.score_function(logits, labels)
-        self.q_hat = self._calculate_conformal_value(scores, alpha)
+        #self.q_hat = self._calculate_conformal_value(scores, alpha)
+        beta = 0.8
+        with torch.zero_grad:
+            q_hat = self.q_hat
+        self.q_hat = (1-beta)* q_hat + beta * self._calculate_conformal_value(scores, alpha)
+
+
 
     def _calculate_conformal_value(self, scores, alpha, marginal_q_hat = torch.inf):
         return calculate_conformal_value(scores, alpha, marginal_q_hat)
